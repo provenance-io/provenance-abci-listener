@@ -1,18 +1,18 @@
 package io.provenance.abci.listener
 
 import com.google.protobuf.Message
-import java.lang.Exception
 import mu.KotlinLogging
 import org.apache.kafka.clients.producer.ProducerInterceptor
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
+import java.lang.Exception
 
 private val logger = KotlinLogging.logger {}
 
 /**
  * Kafka [ProducerInterceptor] for logging on messages send by the [TestProtoProducer].
  */
-class LoggingProducerInterceptor: ProducerInterceptor<String, Message> {
+class LoggingProducerInterceptor : ProducerInterceptor<String, Message> {
     override fun configure(configs: MutableMap<String, *>?) {}
 
     override fun close() {}

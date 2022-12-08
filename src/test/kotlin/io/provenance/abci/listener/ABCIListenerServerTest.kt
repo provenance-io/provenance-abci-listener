@@ -9,7 +9,6 @@ import cosmos.base.store.v1beta1.Listening.StoreKVPair
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.testing.GrpcCleanupRule
-import java.time.Instant
 import kotlinx.coroutines.runBlocking
 import net.christophschubert.cp.testcontainers.CPTestContainerFactory
 import net.christophschubert.cp.testcontainers.SchemaRegistryContainer
@@ -35,6 +34,7 @@ import tendermint.abci.Types.ResponseBeginBlock
 import tendermint.abci.Types.ResponseCommit
 import tendermint.abci.Types.ResponseDeliverTx
 import tendermint.abci.Types.ResponseEndBlock
+import java.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ABCIListenerServerTest {
@@ -72,7 +72,6 @@ class ABCIListenerServerTest {
                 InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
             )
         )
-
 
     @BeforeAll
     internal fun setUpAll() {

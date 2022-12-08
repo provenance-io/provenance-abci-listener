@@ -5,12 +5,12 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializerConfig
-import java.time.Duration
-import java.util.*
 import mu.KotlinLogging
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import java.time.Duration
+import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
@@ -29,12 +29,12 @@ class TestProtoConsumer<K, V : Message>(
     private val bootstrapServers: String,
     private val schemaRegistryUrl: String,
     private val topic: String,
-    private val valueClass: Class<V>,
-): TestConsumer {
+    private val valueClass: Class<V>
+) : TestConsumer {
 
     private val config: Config = ConfigFactory.load()
     private val consumer: KafkaConsumer<K, V> = KafkaConsumer(createConsumerProperties(bootstrapServers))
-    val messages:MutableList<ConsumerRecord<K, V>> = mutableListOf()
+    val messages: MutableList<ConsumerRecord<K, V>> = mutableListOf()
 
     init {
         val t: String = config.getString("kafka.consumer.input.topic.prefix") + topic
@@ -48,7 +48,7 @@ class TestProtoConsumer<K, V : Message>(
     override fun createConsumerProperties(bootstrapServers: String?): Properties {
         val props: Properties = config.getConfig("kafka.consumer.kafka-clients").toProperties()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers!!
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "testgroup" + Random().nextInt());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "testgroup" + Random().nextInt())
         props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
 
         // Specifying the value parameter `V` type is not enough. We need to specify a

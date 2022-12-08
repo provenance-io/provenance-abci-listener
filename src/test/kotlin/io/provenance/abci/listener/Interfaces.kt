@@ -1,9 +1,9 @@
 package io.provenance.abci.listener
 
-import java.util.*
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.Producer
+import java.util.*
 
 interface TestConsumer {
     fun createConsumerProperties(bootstrapServers: String?): Properties
@@ -31,5 +31,4 @@ interface TestProducer<K, V> {
         client.createTopics(topics)
         client.close()
     }
-
 }

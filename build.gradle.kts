@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "io.provenance"
-version = "0.1.0-SNAPSHOT"
+version = System.getenv("VERSION") ?: "-SNAPSHOT"
 
 application {
     mainClass.set("io.provenance.abci.listener.ABCIListenerServerKt")

@@ -1,16 +1,15 @@
 package io.provenance.abci.listener
 
-import com.typesafe.config.ConfigException
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigException
 import io.grpc.Status
 import io.grpc.StatusException
-import java.util.*
 import mu.KotlinLogging
 import network.cosmos.sdk.streaming.abci.v1.Empty
 import org.apache.kafka.clients.producer.Callback
-import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
+import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine

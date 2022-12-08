@@ -3,10 +3,10 @@ package io.provenance.abci.listener
 import com.google.protobuf.Message
 import com.typesafe.config.ConfigFactory
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
-import java.util.*
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
+import java.util.*
 
 /**
  * Produce Protobuf messages to Kafka.
@@ -16,7 +16,7 @@ import org.apache.kafka.clients.producer.ProducerConfig
  * @property schemaRegistryUrl Confluent Schema Registry URL
  * @constructor Creates a [TestProtoProducer] object.
  */
-class TestProtoProducer<K, V: Message>(private val schemaRegistryUrl: String): TestProducer<K, V> {
+class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) : TestProducer<K, V> {
     private val config = ConfigFactory.load()
 
     /**

@@ -18,7 +18,7 @@ enum class Topic(val topic: String) {
     BEGIN_BLOCK("listen-begin-block"),
     END_BLOCK("listen-end-block"),
     DELIVER_TX("listen-deliver-tx"),
-    COMMIT("listen-commit"),
+    COMMIT("listen-commit")
 }
 
 private val logger = KotlinLogging.logger {}
@@ -28,7 +28,7 @@ private val logger = KotlinLogging.logger {}
  */
 class ABCIListenerService(
     private val topicPrefix: String,
-    private val producer: Producer<String, Message>,
+    private val producer: Producer<String, Message>
 ) : ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineImplBase() {
 
     override suspend fun listenBeginBlock(request: ListenBeginBlockRequest): Empty {

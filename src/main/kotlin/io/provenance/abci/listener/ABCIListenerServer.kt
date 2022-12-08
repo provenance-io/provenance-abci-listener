@@ -8,13 +8,11 @@ import io.grpc.health.v1.HealthCheckResponse.ServingStatus
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import io.grpc.protobuf.services.HealthStatusManager
 import io.grpc.protobuf.services.ProtoReflectionService
-import java.net.InetSocketAddress
-import java.time.Duration
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
-import kotlin.math.ceil
+import java.net.InetSocketAddress
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 /**
  * The [ABCIListenerServer] starts the gRPC server the [ABCIListenerService].
@@ -28,7 +26,8 @@ class ABCIListenerServer {
     private val config: Config = ConfigFactory.load()
     private val inet = InetSocketAddress(
         config.getString("grpc.server.addr"),
-        config.getInt("grpc.server.port"))
+        config.getInt("grpc.server.port")
+    )
 
     // Kafka producer
     private var topicPrefix: String = config.getString("kafka.producer.input.topic.prefix")
