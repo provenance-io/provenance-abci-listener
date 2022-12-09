@@ -40,25 +40,25 @@ val testContainersVersion = "1.17.6"
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${coroutinesVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
 
     // Grpc
-    implementation("io.grpc:grpc-kotlin-stub:${grpcKotlinVersion}")
-    implementation("io.grpc:grpc-services:${grpcVersion}")
-    implementation("io.grpc:grpc-protobuf:${grpcVersion}")
-    implementation("com.google.protobuf:protobuf-kotlin:${protobufVersion}")
+    implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+    implementation("io.grpc:grpc-services:$grpcVersion")
+    implementation("io.grpc:grpc-protobuf:$grpcVersion")
+    implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
 
     // Grpc server
-    implementation("io.grpc:grpc-netty-shaded:${grpcVersion}")
-    runtimeOnly("io.grpc:grpc-netty:${grpcVersion}")
+    implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
+    runtimeOnly("io.grpc:grpc-netty:$grpcVersion")
 
     // Log
-    implementation("org.slf4j:slf4j-api:2.0.4")
+    implementation("org.slf4j:slf4j-api:2.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
     // Kafka clients
-    implementation("io.confluent:kafka-protobuf-serializer:${confluentVersion}")
+    implementation("io.confluent:kafka-protobuf-serializer:$confluentVersion")
 
     // Configuration lib for JVM languages (HOCON)
     implementation("com.typesafe:config:1.4.2")
@@ -66,13 +66,13 @@ dependencies {
     // Test
     testImplementation(kotlin("test-junit"))
     testImplementation("org.assertj:assertj-core:3.23.1")
-    testImplementation("io.grpc:grpc-testing:${grpcVersion}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:${coroutinesVersion}")
-    testImplementation("org.testcontainers:testcontainers:${testContainersVersion}")
-    testImplementation("org.testcontainers:junit-jupiter:${testContainersVersion}")
-    testImplementation("org.testcontainers:kafka:${testContainersVersion}")
+    testImplementation("io.grpc:grpc-testing:$grpcVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:$coroutinesVersion")
+    testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
+    testImplementation("org.testcontainers:kafka:$testContainersVersion")
     testImplementation("com.github.christophschubert:cp-testcontainers:v0.2.1")
 }
 
@@ -98,7 +98,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf(
             "-Xjsr305=strict",
-            "-Xopt-in=kotlin.RequiresOptIn",
+            "-Xopt-in=kotlin.RequiresOptIn"
 //            "-Xopt-in=kotlin.contracts.ExperimentalContracts"
         )
         jvmTarget = "11"
@@ -165,13 +165,16 @@ tasks.withType<Test> {
     afterSuite(
         KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
             if (desc.parent == null) { // will match the outermost suite
-                println("Results: {} ({} tests, {} successes, {} failures, {} skipped)"
-                    .format(
-                        result.resultType,
-                        result.testCount,
-                        result.successfulTestCount,
-                        result.failedTestCount,
-                        result.skippedTestCount))
+                println(
+                    "Results: {} ({} tests, {} successes, {} failures, {} skipped)"
+                        .format(
+                            result.resultType,
+                            result.testCount,
+                            result.successfulTestCount,
+                            result.failedTestCount,
+                            result.skippedTestCount
+                        )
+                )
             }
         })
     )
@@ -188,14 +191,14 @@ configurations.all {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
         id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:${grpcKotlinVersion}:jdk8@jar"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion}:jdk8@jar"
         }
     }
     generateProtoTasks {

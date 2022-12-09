@@ -5,7 +5,6 @@ import com.typesafe.config.ConfigException
 import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
-import network.cosmos.sdk.streaming.abci.v1.Empty
 import org.apache.kafka.clients.producer.Callback
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -33,7 +32,7 @@ fun Config.toProperties(): Properties {
  *
  * Resumes with a [StatusException] when an exception is encountered.
  */
-suspend inline fun <reified K : Any, reified V : Any> Producer<K, V>.dispatch(record: ProducerRecord<K, V>): Empty =
+suspend inline fun <reified K : Any, reified V : Any> Producer<K, V>.dispatch(record: ProducerRecord<K, V>): Any =
     suspendCoroutine { continuation ->
         val logger = KotlinLogging.logger {}
         val callback = Callback { metadata, exception ->
@@ -46,7 +45,7 @@ suspend inline fun <reified K : Any, reified V : Any> Producer<K, V>.dispatch(re
                 )
             } else {
                 logger.debug("{}", metadata)
-                continuation.resume(Empty.newBuilder().build())
+                continuation.resume(Unit)
             }
         }
         this.send(record, callback)

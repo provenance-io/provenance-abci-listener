@@ -6,18 +6,21 @@ import com.google.protobuf.Timestamp
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import cosmos.base.store.v1beta1.Listening.StoreKVPair
+import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
+import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockRequest
+import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockResponse
+import cosmos.streaming.abci.v1.Grpc.ListenCommitRequest
+import cosmos.streaming.abci.v1.Grpc.ListenCommitResponse
+import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxRequest
+import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxResponse
+import cosmos.streaming.abci.v1.Grpc.ListenEndBlockRequest
+import cosmos.streaming.abci.v1.Grpc.ListenEndBlockResponse
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.testing.GrpcCleanupRule
 import kotlinx.coroutines.runBlocking
 import net.christophschubert.cp.testcontainers.CPTestContainerFactory
 import net.christophschubert.cp.testcontainers.SchemaRegistryContainer
-import network.cosmos.sdk.streaming.abci.v1.ABCIListenerServiceGrpcKt
-import network.cosmos.sdk.streaming.abci.v1.Empty
-import network.cosmos.sdk.streaming.abci.v1.ListenBeginBlockRequest
-import network.cosmos.sdk.streaming.abci.v1.ListenCommitRequest
-import network.cosmos.sdk.streaming.abci.v1.ListenDeliverTxRequest
-import network.cosmos.sdk.streaming.abci.v1.ListenEndBlockRequest
 import org.apache.kafka.clients.producer.Producer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -98,7 +101,7 @@ class ABCIListenerServerTest {
                 .start()
         )
 
-        val reply: Empty = listenBeginBlockStub.listenBeginBlock(
+        val reply: ListenBeginBlockResponse = listenBeginBlockStub.listenBeginBlock(
             ListenBeginBlockRequest.newBuilder()
                 .setReq(
                     RequestBeginBlock.newBuilder()
@@ -136,7 +139,7 @@ class ABCIListenerServerTest {
                 )
                 .build()
         )
-        assertThat(reply.javaClass).isEqualTo(Empty::class.java)
+        assertThat(reply.javaClass).isEqualTo(ListenBeginBlockResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenBeginBlockRequest>(
             bootstrapServers = kafka.bootstrapServers,
@@ -159,13 +162,13 @@ class ABCIListenerServerTest {
                 .start()
         )
 
-        val reply: Empty = listenEndBlockStub.listenEndBlock(
+        val reply: ListenEndBlockResponse = listenEndBlockStub.listenEndBlock(
             ListenEndBlockRequest.newBuilder()
                 .setReq(RequestEndBlock.newBuilder().setHeight(1).build())
                 .setRes(ResponseEndBlock.newBuilder().build())
                 .build()
         )
-        assertThat(reply.javaClass).isEqualTo(Empty::class.java)
+        assertThat(reply.javaClass).isEqualTo(ListenEndBlockResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenEndBlockRequest>(
             bootstrapServers = kafka.bootstrapServers,
@@ -188,14 +191,14 @@ class ABCIListenerServerTest {
                 .start()
         )
 
-        val reply: Empty = listenDeliverTxStub.listenDeliverTx(
+        val reply: ListenDeliverTxResponse = listenDeliverTxStub.listenDeliverTx(
             ListenDeliverTxRequest.newBuilder()
                 .setBlockHeight(1)
                 .setReq(RequestDeliverTx.newBuilder().setTx(ByteString.copyFrom("testTx1".toByteArray())).build())
                 .setRes(ResponseDeliverTx.newBuilder().setCode(1).build())
                 .build()
         )
-        assertThat(reply.javaClass).isEqualTo(Empty::class.java)
+        assertThat(reply.javaClass).isEqualTo(ListenDeliverTxResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenDeliverTxRequest>(
             bootstrapServers = kafka.bootstrapServers,
@@ -231,7 +234,7 @@ class ABCIListenerServerTest {
             )
         }
 
-        val reply: Empty = listenCommitStub.listenCommit(
+        val reply: ListenCommitResponse = listenCommitStub.listenCommit(
             ListenCommitRequest.newBuilder()
                 .setBlockHeight(1)
                 .setRes(
@@ -242,7 +245,7 @@ class ABCIListenerServerTest {
                 .addAllChangeSet(changeSet)
                 .build()
         )
-        assertThat(reply.javaClass).isEqualTo(Empty::class.java)
+        assertThat(reply.javaClass).isEqualTo(ListenCommitResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenCommitRequest>(
             bootstrapServers = kafka.bootstrapServers,
