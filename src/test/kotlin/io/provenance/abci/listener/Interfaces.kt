@@ -3,7 +3,7 @@ package io.provenance.abci.listener
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.clients.producer.Producer
-import java.util.*
+import java.util.Properties
 
 interface TestConsumer {
     fun createConsumerProperties(bootstrapServers: String?): Properties

@@ -6,7 +6,7 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
-import java.util.*
+import java.util.Properties
 
 /**
  * Produce Protobuf messages to Kafka.

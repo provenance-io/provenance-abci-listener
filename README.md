@@ -130,8 +130,8 @@ local-listen-end-block
 local-listen-deliver-tx # will not exist until the first Tx is sent
 local-listen-commit
 ```
-The default plugin configuration uses the prefix `local-`. You can override this by overriding the plugin's
-`application.conf` file. See the [Build and export the plugin](#2-build-and-export-the-plugin) section.
+The default plugin configuration uses the topic prefix `local-`. You can override this by setting
+`kafka.producer.input.topic.prefix` in `src/resources/application.conf` file.
 
 ## Linting
 To install the Kotlin linter run:

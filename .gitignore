@@ -62,6 +62,3 @@ bin/
 .history
 .scala_dependencies
 .cache-main
-
-# !!! temporary -- work in progress !!!
-.github/workflows

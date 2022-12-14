@@ -10,7 +10,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import java.time.Duration
-import java.util.*
+import java.util.Collections
+import java.util.Properties
+import java.util.Random
 
 private val logger = KotlinLogging.logger {}
 
@@ -48,7 +50,7 @@ class TestProtoConsumer<K, V : Message>(
     override fun createConsumerProperties(bootstrapServers: String?): Properties {
         val props: Properties = config.getConfig("kafka.consumer.kafka-clients").toProperties()
         props[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers!!
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "testgroup" + Random().nextInt())
+        props[ConsumerConfig.GROUP_ID_CONFIG] = "testgroup" + Random().nextInt()
         props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
 
         // Specifying the value parameter `V` type is not enough. We need to specify a

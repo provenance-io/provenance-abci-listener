@@ -1,20 +1,17 @@
-import com.google.protobuf.gradle.generateProtoTasks
-import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.plugins
-import com.google.protobuf.gradle.protobuf
-import com.google.protobuf.gradle.protoc
+import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application // Provide convenience executables for trying out the examples.
+    jacoco
     kotlin("jvm") version "1.7.21"
     id("idea")
-    id("com.google.protobuf") version "0.8.18"
+    id("org.gradle.crypto.checksum") version "1.4.0"
     id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
 group = "io.provenance"
-version = System.getenv("VERSION") ?: "-SNAPSHOT"
+version = System.getenv("VERSION") ?: "0-SNAPSHOT"
 
 application {
     mainClass.set("io.provenance.abci.listener.ABCIListenerServerKt")
@@ -36,17 +33,16 @@ val coroutinesVersion = "1.6.4"
 val confluentVersion = "7.3.0"
 val junitJupiterVersion = "5.9.1"
 val testContainersVersion = "1.17.6"
+val provenanceProtoKotlinVersion = "1.14.0" // todo: 1.14.0 is a local maven publish. update soon once on maven central.
 
 dependencies {
     // Kotlin
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
 
-    // Grpc
-    implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+    // Grpc services
     implementation("io.grpc:grpc-services:$grpcVersion")
-    implementation("io.grpc:grpc-protobuf:$grpcVersion")
-    implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
+    implementation("io.provenance:proto-kotlin:$provenanceProtoKotlinVersion")
 
     // Grpc server
     implementation("io.grpc:grpc-netty-shaded:$grpcVersion")
@@ -76,16 +72,6 @@ dependencies {
     testImplementation("com.github.christophschubert:cp-testcontainers:v0.2.1")
 }
 
-// this makes it so IntelliJ picks up the sources but then ktlint complains
-
-sourceSets {
-    val main by getting { }
-    main.java.srcDirs("build/generated/source/proto/main/grpc")
-    main.java.srcDirs("build/generated/source/proto/main/java")
-    main.java.srcDirs("build/generated/source/proto/main/grpckt")
-    main.java.srcDirs("build/generated/source/proto/main/kotlin")
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
@@ -99,7 +85,6 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf(
             "-Xjsr305=strict",
             "-Xopt-in=kotlin.RequiresOptIn"
-//            "-Xopt-in=kotlin.contracts.ExperimentalContracts"
         )
         jvmTarget = "11"
         languageVersion = "1.7"
@@ -107,20 +92,18 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.withType<Jar> {
-    manifest {
-        attributes["Main-Class"] = application.mainClass.get()
-    }
+tasks.assembleDist {
+    dependsOn(tasks.test)
+    finalizedBy("checksumDist") // checksums are generated after assembleDist runs
+}
 
-    from(sourceSets.main.get().output)
+tasks.register<Checksum>("checksumDist") {
+    val dir = layout.buildDirectory.dir("distributions")
+    inputFiles.setFrom(dir)
+    outputDirectory.set(dir)
+    checksumAlgorithm.set(Checksum.Algorithm.MD5)
 
-    dependsOn(configurations.runtimeClasspath)
-
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(tasks.assembleDist)
 }
 
 tasks.withType<Test> {
@@ -166,18 +149,31 @@ tasks.withType<Test> {
         KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
             if (desc.parent == null) { // will match the outermost suite
                 println(
-                    "Results: {} ({} tests, {} successes, {} failures, {} skipped)"
-                        .format(
-                            result.resultType,
-                            result.testCount,
-                            result.successfulTestCount,
-                            result.failedTestCount,
-                            result.skippedTestCount
-                        )
+                    "Results: ${result.resultType} (" +
+                        "${result.testCount} tests, " +
+                        "${result.successfulTestCount} successes," +
+                        "${result.failedTestCount} failures, " +
+                        "${result.skippedTestCount} skipped)"
                 )
             }
         })
     )
+
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+tasks.withType<JacocoReport> {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.withType<JacocoCoverageVerification> {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.5".toBigDecimal()
+            }
+        }
+    }
 }
 
 configurations.all {
@@ -185,31 +181,6 @@ configurations.all {
         if (requested.group == "org.apache.logging.log4j" && (requested.version == "2.14.1") || (requested.version == "2.15.0")) {
             useVersion("2.15.0")
             because("CVE-2021-44228")
-        }
-    }
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:$protobufVersion"
-    }
-    plugins {
-        id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
-        }
-        id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion}:jdk8@jar"
-        }
-    }
-    generateProtoTasks {
-        all().forEach {
-            it.plugins {
-                id("grpc")
-                id("grpckt")
-            }
-            it.builtins {
-                id("kotlin")
-            }
         }
     }
 }
