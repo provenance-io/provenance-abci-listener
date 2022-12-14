@@ -1,4 +1,4 @@
-name: Kotlin CI
+name: CI
 #  Kotlin CI workflow runs unit tests, builds artifact and uploads a code coverage report
 
 concurrency:
