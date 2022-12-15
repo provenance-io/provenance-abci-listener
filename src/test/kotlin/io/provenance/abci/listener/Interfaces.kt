@@ -19,12 +19,12 @@ interface TestProducer<K, V> {
         val client = AdminClient.create(config)
         val topics = mutableListOf<NewTopic>()
 
-        Topic.values().forEach {
+        ListenTopic.values().forEach {
             topics.add(
                 NewTopic(
-                    envProps.getProperty("input.topic.prefix") + it.topic,
-                    envProps.getProperty("input.topic.partitions").toInt(),
-                    envProps.getProperty("input.topic.replication.factor").toShort()
+                    envProps.getProperty(it.topic),
+                    envProps.getProperty("topic.partitions").toInt(),
+                    envProps.getProperty("topic.replication.factor").toShort()
                 )
             )
         }

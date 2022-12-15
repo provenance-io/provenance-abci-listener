@@ -46,7 +46,7 @@ class ABCIListenerServerTest {
     private val kafka: KafkaContainer = testContainerFactory.createKafka()
     private val schemaRegistry: SchemaRegistryContainer = testContainerFactory.createSchemaRegistry(kafka)
     private val config: Config = ConfigFactory.load()
-    private val topicPrefix: String = config.getString("kafka.producer.input.topic.prefix")
+    private val topicConfig: Config = config.getConfig("kafka.producer.listen-topics")
     private lateinit var producer: Producer<String, Message>
 
     @get:Rule
@@ -96,7 +96,7 @@ class ABCIListenerServerTest {
 
         grpcCleanupRule.register(
             InProcessServerBuilder.forName("listenBeginBlock").directExecutor()
-                .addService(ABCIListenerService(topicPrefix, producer))
+                .addService(ABCIListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -144,7 +144,7 @@ class ABCIListenerServerTest {
         val consumer = TestProtoConsumer<String, ListenBeginBlockRequest>(
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
-            topic = Topic.BEGIN_BLOCK.topic,
+            topic = topicConfig.getString(ListenTopic.BEGIN_BLOCK.topic),
             valueClass = ListenBeginBlockRequest::class.java
         )
         consumer.consumeAndClose()
@@ -157,7 +157,7 @@ class ABCIListenerServerTest {
     fun listenEndBlock(): Unit = runBlocking {
         grpcCleanupRule.register(
             InProcessServerBuilder.forName("listenEndBlock").directExecutor()
-                .addService(ABCIListenerService(topicPrefix, producer))
+                .addService(ABCIListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -173,7 +173,7 @@ class ABCIListenerServerTest {
         val consumer = TestProtoConsumer<String, ListenEndBlockRequest>(
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
-            topic = Topic.END_BLOCK.topic,
+            topic = topicConfig.getString(ListenTopic.END_BLOCK.topic),
             valueClass = ListenEndBlockRequest::class.java
         )
         consumer.consumeAndClose()
@@ -186,7 +186,7 @@ class ABCIListenerServerTest {
     fun listenDeliverTx(): Unit = runBlocking {
         grpcCleanupRule.register(
             InProcessServerBuilder.forName("listenDeliverTx").directExecutor()
-                .addService(ABCIListenerService(topicPrefix, producer))
+                .addService(ABCIListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -203,7 +203,7 @@ class ABCIListenerServerTest {
         val consumer = TestProtoConsumer<String, ListenDeliverTxRequest>(
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
-            topic = Topic.DELIVER_TX.topic,
+            topic = topicConfig.getString(ListenTopic.DELIVER_TX.topic),
             valueClass = ListenDeliverTxRequest::class.java
         )
         consumer.consumeAndClose()
@@ -217,7 +217,7 @@ class ABCIListenerServerTest {
     fun listenCommit(): Unit = runBlocking {
         grpcCleanupRule.register(
             InProcessServerBuilder.forName("listenCommit").directExecutor()
-                .addService(ABCIListenerService(topicPrefix, producer))
+                .addService(ABCIListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -250,7 +250,7 @@ class ABCIListenerServerTest {
         val consumer = TestProtoConsumer<String, ListenCommitRequest>(
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
-            topic = Topic.COMMIT.topic,
+            topic = topicConfig.getString(ListenTopic.COMMIT.topic),
             valueClass = ListenCommitRequest::class.java
         )
         consumer.consumeAndClose()

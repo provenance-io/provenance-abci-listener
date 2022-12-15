@@ -15,7 +15,7 @@ import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 /**
- * The [ABCIListenerServer] starts the gRPC server the [ABCIListenerService].
+ * The [ABCIListenerServer] starts the gRPC server for the [ABCIListenerService].
  * In addition to the [ABCIListenerService], a health service (managed by [HealthStatusManager])
  * and a [ProtoReflectionService] are also added.
  *
@@ -30,7 +30,7 @@ class ABCIListenerServer {
     )
 
     // Kafka producer
-    private var topicPrefix: String = config.getString("kafka.producer.input.topic.prefix")
+    private var topicConfig: Config = config.getConfig("kafka.producer.listen-topics")
     private var kafkaConfig: Config = config.getConfig("kafka.producer.kafka-clients")
     private val producer: Producer<String, Message> = KafkaProducer(kafkaConfig.toProperties())
 
@@ -40,7 +40,7 @@ class ABCIListenerServer {
         .directExecutor()
         .addService(health.healthService)
         .addService(ProtoReflectionService.newInstance())
-        .addService(ABCIListenerService(topicPrefix, producer))
+        .addService(ABCIListenerService(topicConfig, producer))
         .build()
 
     /** Start the [ABCIListenerService] gRPC server. */

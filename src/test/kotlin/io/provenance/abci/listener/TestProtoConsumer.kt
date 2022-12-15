@@ -39,8 +39,7 @@ class TestProtoConsumer<K, V : Message>(
     val messages: MutableList<ConsumerRecord<K, V>> = mutableListOf()
 
     init {
-        val t: String = config.getString("kafka.consumer.input.topic.prefix") + topic
-        consumer.subscribe(Collections.singleton(t))
+        consumer.subscribe(Collections.singleton(topic))
     }
 
     /**

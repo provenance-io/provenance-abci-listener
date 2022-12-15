@@ -29,9 +29,10 @@ class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) :
         props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[ProducerConfig.INTERCEPTOR_CLASSES_CONFIG] = LoggingProducerInterceptor::class.qualifiedName
 
-        props["input.topic.prefix"] = config.getString("kafka.producer.input.topic.prefix")
-        props["input.topic.partitions"] = config.getString("kafka.producer.input.topic.partitions")
-        props["input.topic.replication.factor"] = config.getString("kafka.producer.input.topic.replication.factor")
+        // add topics for AdminClient
+        props.putAll(config.getConfig("kafka.producer.listen-topics").toProperties())
+        props["topic.partitions"] = config.getString("kafka.producer.topic.partitions")
+        props["topic.replication.factor"] = config.getString("kafka.producer.topic.replication.factor")
 
         return props
     }
