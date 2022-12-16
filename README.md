@@ -32,20 +32,21 @@ For other plugin examples see [Cosmos SDK streaming](https://github.com/cosmos/c
 
 ## Table of Contents
 <!-- TOC -->
+  - [Status](#status)
+  - [Table of Contents](#table-of-contents)
   - [How to run](#how-to-run)
-    - [Pre-built Docker images](#pre-built-docker-images)
     - [Manual setup](#manual-setup)
+  - [Building the Plugin](#building-the-plugin)
+  - [Testing](#testing)
   - [Linting](#linting)
 
 ## How to run
 
-The plugin is designed to stream Provenance blockchain ABCI events to Kafka and register the respective message
-Protobuf schema with the Confluent Platform Schema Registry. Therefore, it requires the Confluent Platform (Confluent Cloud or self-managed)
-instances of the platform. For local testing we can rely on `docker-compose` to set up the Confluent Platform
-and a local isolated node instance of the Provenance blockchain. Follow the instructions below to see it in action.
-
-### Pre-built Docker images
-- Coming soon!
+The plugin is designed to stream Provenance blockchain ABCI events to Kafka and register the
+respective Protobuf message schema with the Confluent Schema Registry. For local testing we
+can rely on [cp-all-in-one](https://github.com/confluentinc/cp-all-in-one/blob/7.3.0-post/cp-all-in-one/docker-compose.yml)
+and `docker-compose` to set up the Confluent Platform on our local environment. For production
+environments you can use Confluent Cloud or self-managed Confluent Platform.
 
 ### Manual setup
 
@@ -58,8 +59,8 @@ Prerequisites:
 
 Steps:
 1. Standup Confluent Platform
-2. Build and export the plugin
-3. Start a local isolated node
+2. Start a local isolated node
+
 
 #### 1. Stand up the Confluent Platform
 
@@ -67,33 +68,29 @@ If this is your first time standing up the Confluent Platform with `docker-compo
 the [Quick Start for Confluent Platform](https://docs.confluent.io/platform/current/platform-quickstart.html#quick-start-for-cp).
 
 ```shell
+mkdir $HOME/workspace && cd $HOME/workspace
+```
+
+```shell
+mkdir confluentinc && cd confluentinc
+
 curl --silent --output docker-compose.yml \
   https://raw.githubusercontent.com/confluentinc/cp-all-in-one/7.3.0-post/cp-all-in-one/docker-compose.yml
 ```
 ```shell
 docker-compose up -d
+
+# ignore docker output
+docker-compose up -d &> /dev/null
 ```
 
-Navigate to the Control Center at http://lcoalhost:9021. It takes the control center a few minutes to start up.
-If after a while you are not able to access it, run `docker-compose restart control-center` and wait a few minutes.
+#### 2. Start a local isolated Provenance node
 
-#### 2. Build and export the plugin
-
-```shell
-git clone https://github.com/provenance-io/provenance-abci-listener && cd provenance-abci-listener
-```
+The quickest way to test the plugin with the Provenance blockchain is to start a local isolated node.
 
 ```shell
-./gradlew clean jar
-```
-Note: the `jar` task has been overwritten to create a uber JAR. We'll *export* the node before we start
-the node in the next step.
+cd $HOME/workspace
 
-#### 3. Start a local isolated node
-
-The quickest way to test the plugin with the Provenance blockchain is to start local isolated node.
-
-```shell
 git clone https://github.com/provenance-io/provenance  && cd provenance
 ```
 
@@ -102,16 +99,44 @@ This allows you to configure a single node in a local environment
 make clean build run-config
 ```
 
+Create a `plugins/` folder for housing the plugin binary and any plugin configs.
+```shell
+mkdir build/run/provenanced/plugins && cd build/run/provenanced/plugins
+
+PLUGIN_VERSION={release version}
+
+curl -L --silent --output provenance-abci-listener-$PLUGIN_VERSION.zip \
+  https://github.com/provenance-io/provenance-abci-listener/releases/download/$PLUGIN_VERSION/provenance-abci-listener-$PLUGIN_VERSION.zip
+
+unzip provenance-abci-listener-$PLUGIN_VERSION.zip
+
+export COSMOS_SDK_ABCI_V1=$HOME/workspace/provenance/build/run/provenanced/plugins/provenance-abci-listener/bin/provenance-abci-listener
+```
+
+Check that everything is in order so far.
+```shell
+sh -c $COSMOS_SDK_ABCI_V1
+1|1|tcp|127.0.0.1:1234|grpc
+```
+If everything is in order you'll see the above output. Now `CTRL-C` to stop the plugin.
+
+Note: by default, the built-in configuration options look for Kafka on `localhost:9092`
+and the Schema Registry on `http://localhost:8081`. For local testing this is fine,
+but for other environments you'll need to provide the plugin with an external
+configuration file. You can do this by downloading, updating, exporting the config.
+
+```shell
+curl --silent --output application.conf \
+  https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/main/src/$PLUGIN_VERSION/resources/application.conf
+ 
+# external configuration
+export PROVENANCE_ABCI_LISTENER_OPTS="-Dconfig.file=$HOME/workspace/provenance/build/run/provenanced/plugins/application.conf"
+```
+
 Enable streaming by specifying a plugin version *(abci_v1 is the currently supported message protocol version)*
 ```shell
 ./build/provenanced config set streaming.abci.plugin abci_v1
 ```
-
-Export the plugin so the provenance binary can find it.
-```shell
-export COSMOS_SDK_ABCI_V1="java -jar <path to>/provenance-abci-listener/build/libs/provenance-abci-listener-SNAPSHOT.jar"
-```
-Note: local builds default to the `SNAPSHOT` version.
 
 Start the node
 ```shell
@@ -131,10 +156,31 @@ local-listen-deliver-tx # will not exist until the first Tx is sent
 local-listen-commit
 ```
 The default plugin configuration uses the topic prefix `local-`. You can override this by setting
-`kafka.producer.input.topic.prefix` in `src/resources/application.conf` file.
+`kafka.producer.listen-topics.prefix` in `application.conf` file.
+
+## Building the Plugin
+
+To build the plugin from source, run:
+
+```shell
+git clone https://github.com/provenance-io/provenance-abci-listener && cd provenance-abci-listener
+```
+```shell
+# will also run tests
+./gradlew assembleDist
+```
+You'll find the distribution files in `build/distributions/`.
+
+## Testing
+
+To test the plugin, run:
+
+```shell
+./gradlew test
+````
 
 ## Linting
-To install the Kotlin linter run:
+To install the Kotlin linter, run:
 ```
 brew install ktlint
 ```
