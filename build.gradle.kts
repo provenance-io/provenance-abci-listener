@@ -102,6 +102,7 @@ tasks.register<Checksum>("checksumDist") {
     inputFiles.setFrom(dir)
     outputDirectory.set(dir)
     checksumAlgorithm.set(Checksum.Algorithm.MD5)
+    appendFileNameToChecksum.set(true)
 
     dependsOn(tasks.assembleDist)
 }
