@@ -25,15 +25,9 @@ class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) :
      */
     override fun createProducerProperties(bootstrapServers: String?): Properties {
         val props: Properties = config.getConfig("kafka.producer.kafka-clients").toProperties()
-        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
+        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers!!
         props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
         props[ProducerConfig.INTERCEPTOR_CLASSES_CONFIG] = LoggingProducerInterceptor::class.qualifiedName
-
-        // add topics for AdminClient
-        props.putAll(config.getConfig("kafka.producer.listen-topics").toProperties())
-        props["topic.partitions"] = config.getString("kafka.producer.topic.partitions")
-        props["topic.replication.factor"] = config.getString("kafka.producer.topic.replication.factor")
-
         return props
     }
 
@@ -43,7 +37,16 @@ class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) :
      */
     override fun createProducer(bootstrapServers: String?): Producer<K, V> {
         val props = createProducerProperties(bootstrapServers!!)
-        createTopics(props)
+        createTopics(createTopicsProps(bootstrapServers))
         return KafkaProducer(props)
+    }
+
+    private fun createTopicsProps(bootstrapServers: String?): Properties {
+        val props = Properties()
+        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers!!
+        props.putAll(config.getConfig("kafka.producer.listen-topics").toProperties())
+        props["topic.partitions"] = config.getString("kafka.producer.topic.partitions")
+        props["topic.replication.factor"] = config.getString("kafka.producer.topic.replication.factor")
+        return props
     }
 }

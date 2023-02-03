@@ -33,7 +33,7 @@ val coroutinesVersion = "1.6.4"
 val confluentVersion = "7.3.0"
 val junitJupiterVersion = "5.9.1"
 val testContainersVersion = "1.17.6"
-val provenanceProtoKotlinVersion = "1.14.0" // todo: 1.14.0 is a local maven publish. update soon once on maven central.
+val provenanceProtoKotlinVersion = "1.14.0-rc1"
 
 dependencies {
     // Kotlin
@@ -110,7 +110,11 @@ tasks.register<Checksum>("checksumDist") {
 tasks.withType<Test> {
     useJUnitPlatform()
 
-//    maxParallelForks = Runtime.getRuntime().availableProcessors().intdiv(2) ?: 1
+    // JUnit 5 parallel test execution
+    // https://github.com/gradle/gradle/issues/6453#issuecomment-463702749
+    systemProperties["junit.jupiter.execution.parallel.enabled"] = true
+    systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
 
     testLogging {
         showStandardStreams = true
