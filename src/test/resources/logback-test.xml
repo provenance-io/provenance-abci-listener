@@ -24,13 +24,13 @@
         <appender-ref ref="NICE"/>
     </logger>
 
-    <root level="INFO">
+    <root level="WARN">
         <appender-ref ref="KAFKA"/>
     </root>
 
     <logger name="org.apache.http" level="WARN"/>
-    <logger name="org.testcontainers" level="DEBUG"/>
+    <logger name="org.testcontainers" level="WARN"/>
     <logger name="com.github.dockerjava" level="WARN"/>
-    <logger name="io.confluent" level="INFO"/>
-    <logger name="org.apache.kafka" level="INFO"/>
+    <logger name="io.confluent" level="WARN"/>
+    <logger name="org.apache.kafka" level="WARN"/>
 </configuration>
