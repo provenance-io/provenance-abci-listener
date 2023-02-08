@@ -33,7 +33,7 @@ val coroutinesVersion = "1.6.4"
 val confluentVersion = "7.3.0"
 val junitJupiterVersion = "5.9.1"
 val testContainersVersion = "1.17.6"
-val provenanceProtoKotlinVersion = "1.14.0-rc1"
+val provenanceProtoKotlinVersion = "1.14.0-rc2"
 
 dependencies {
     // Kotlin

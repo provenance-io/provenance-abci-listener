@@ -33,6 +33,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## Unreleased
 
+### Improvements
+
+* (deps) [PR 5](https://github.com/provenance-io/provenance-abci-listener/pull/5)  Bump Provenance proto-kotlin to 1.14.0-rc2 (from [1.14.0-rc1](https://github.com/provenance-io/provenance/compare/v1.14.0-rc1...v1.14.0-rc2))
+
 ### Features
 
 * [#2](https://github.com/provenance-io/provenance-abci-listener/issues/2) Add initial implementation of the gRPC State Listening plugin
