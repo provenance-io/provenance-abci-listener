@@ -42,4 +42,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * [#2](https://github.com/provenance-io/provenance-abci-listener/issues/2) Add initial implementation of the gRPC State Listening plugin
 
+### Bug Fixes
+
+* [PR 8](https://github.com/provenance-io/provenance-abci-listener/pull/8) Fix release workflow to trigger on tagged versions
+
 ## PRE-HISTORY
