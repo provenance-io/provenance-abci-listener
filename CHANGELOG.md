@@ -36,6 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * (deps) [PR 5](https://github.com/provenance-io/provenance-abci-listener/pull/5)  Bump Provenance proto-kotlin to 1.14.0-rc2 (from [1.14.0-rc1](https://github.com/provenance-io/provenance/compare/v1.14.0-rc1...v1.14.0-rc2))
+* [PR 6](https://github.com/provenance-io/provenance-abci-listener/pull/6) Update codeowners file
 
 ### Features
 
