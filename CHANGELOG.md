@@ -33,7 +33,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## Unreleased
 
-###
+### Improvements
 
 * (ci) [PR 22](https://github.com/provenance-io/provenance-abci-listener/pull/) Updates CI workflows and bumps action versions
 
