@@ -35,7 +35,7 @@ jobs:
         with:
           arguments: assembleDist
       - name: Upload artifacts
-      - uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
