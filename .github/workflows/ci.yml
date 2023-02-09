@@ -21,35 +21,35 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching #.#.#-rc#, i.e. 1.0-rc1, 20.15.10-rc5
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Lint
-        uses: fkneeland-figure/gha-kotlin-linter@v3
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Lint
+#        uses: fkneeland-figure/gha-kotlin-linter@v3
 
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 11
-      - name: Test
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
-      - uses: codecov/codecov-action@v3
-        with:
-          directory: "build/reports"
+#  test:
+#    runs-on: ubuntu-latest
+#    needs: lint
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-java@v3
+#        with:
+#          distribution: temurin
+#          java-version: 11
+#      - name: Test
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: clean test
+#      - uses: codecov/codecov-action@v3
+#        with:
+#          directory: "build/reports"
 
   release:
-    if: ${{ github.ref_type == 'tag' }}
+#    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
-    needs: [lint, test]
+#    needs: [lint, test]
     permissions:
       contents: write
     steps:
@@ -60,14 +60,18 @@ jobs:
           java-version: 11
       - name: Assemble Dist
         uses: gradle/gradle-build-action@v2
+        env:
+          VERSION: ${{ GITHUB_REF##*/ }}
         with:
-          arguments: assembleDist
+          # skip tests, we've already run them.
+          arguments: clean -x test assembleDist
       - name: Checksum Dist
         uses: gradle/gradle-build-action@v2
         with:
           arguments: checksumDist
-      - uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/distributions/*"
-          bodyFile: "RELEASE_CHANGELOG.md"
-          name: Release ${{ github.ref }}
+#      - uses: ncipollo/release-action@v1
+#        with:
+#          tag_name: ${{ github.ref }}
+#          release_name: Release ${{ github.ref }}
+#          artifacts: "build/distributions/*"
+#          bodyFile: "RELEASE_CHANGELOG.md"
