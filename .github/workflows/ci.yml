@@ -41,7 +41,7 @@ jobs:
       - name: Test
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: test
+          arguments: clean test
       - uses: codecov/codecov-action@v3
         with:
           directory: "build/reports"
@@ -58,16 +58,24 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
+      - name: Set tag version
+        id: get_ver
+        run: |
+          echo "::set-output name=release_tag::${GITHUB_REF##*/}"
       - name: Assemble Dist
         uses: gradle/gradle-build-action@v2
+        env:
+          VERSION: ${{ steps.get_ver.outputs.release_tag }}
         with:
-          arguments: assembleDist
+          # skip tests, we've already run them.
+          arguments: clean -x test assembleDist
       - name: Checksum Dist
         uses: gradle/gradle-build-action@v2
         with:
           arguments: checksumDist
       - uses: ncipollo/release-action@v1
         with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           artifacts: "build/distributions/*"
           bodyFile: "RELEASE_CHANGELOG.md"
-          name: Release ${{ github.ref }}
