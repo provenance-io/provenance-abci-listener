@@ -61,7 +61,7 @@ jobs:
       - name: Assemble Dist
         uses: gradle/gradle-build-action@v2
         env:
-          VERSION: ${{ GITHUB_REF##*/ }}
+          VERSION: ${{ GITHUB_REF }}
         with:
           # skip tests, we've already run them.
           arguments: clean -x test assembleDist
