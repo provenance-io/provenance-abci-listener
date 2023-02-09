@@ -49,6 +49,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 * [PR 8](https://github.com/provenance-io/provenance-abci-listener/pull/8) Fix release workflow to trigger on tagged versions
+* [PR 12](https://github.com/provenance-io/provenance-abci-listener/pull/12) Fix release workflow to properly set distribution version
 
 ### Full Commit History
 
