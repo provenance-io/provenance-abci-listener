@@ -1,0 +1,26 @@
+name: Lint
+# Lint workflow runs Kotlin linter (ktlint) on the code base.
+
+#  This workflow is run on every pull request and push to main.
+#  If no *.kt files are changed it will pass without running as these are required checks.
+on:
+  pull_request:
+    paths:
+      - "**/*.kt"
+      - "*.gradle.kts"
+      - ".github/workflows/lint.yml"
+  push:
+    branches:
+      - main
+
+# concurrency is not defined in here because this job usually doesn't
+# run long enough to need cancelling, and it's okay for it to run multiple
+# times for the same PR.
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Lint
+        uses: vroy/gha-kotlin-linter@v4
