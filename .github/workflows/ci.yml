@@ -58,10 +58,14 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
+      - name: Set tag version
+          id: get_ver
+          run: |
+            echo "::set-output name=release_tag::${GITHUB_REF##*/}"
       - name: Assemble Dist
         uses: gradle/gradle-build-action@v2
         env:
-          VERSION: ${{ github.ref }}
+          VERSION: ${{ steps.get_ver.outputs.release_tag }}
         with:
           # skip tests, we've already run them.
           arguments: clean -x test assembleDist
