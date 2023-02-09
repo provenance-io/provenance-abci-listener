@@ -1,0 +1,43 @@
+name: Release
+#  Release workflow builds and releases distribution artifacts.
+
+#  This workflow is run on pushes to master & every Pull Request,
+#  if no *.kt files are changed it will pass without running as these are required checks
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"     # Push events to matching #.#.#, i.e. 1.0, 20.15.10
+      - "[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching #.#.#-rc#, i.e. 1.0-rc1, 20.15.10-rc5
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Set tag version
+        run: |
+          echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Defined tag version
+        run: |
+          echo VERSION=$VERSION
+      - name: Build artifacts
+        uses: gradle/gradle-build-action@v2.3.3
+        with:
+          arguments: assembleDist
+      - name: Upload artifacts
+      - uses: ncipollo/release-action@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          artifacts: "build/distributions/*"
+          bodyFile: "RELEASE_CHANGELOG.md"

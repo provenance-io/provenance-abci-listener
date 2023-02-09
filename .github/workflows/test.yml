@@ -1,0 +1,35 @@
+name: Test
+# Test workflow runs unit tests and uploads a code coverage report.
+
+#  This workflow is run on every pull request and push to main.
+#  If no *.kt files are changed it will pass without running as these are required checks.
+on:
+  pull_request:
+    paths:
+      - "**/*.kt"
+      - "*.gradle.kts"
+      - ".github/workflows/test.yml"
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Test
+        uses: gradle/gradle-build-action@v2.3.3
+        with:
+          arguments: test
+      - uses: codecov/codecov-action@v3
+        with:
+          directory: "build/reports"

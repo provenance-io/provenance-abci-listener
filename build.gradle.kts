@@ -93,7 +93,6 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.assembleDist {
-    dependsOn(tasks.test)
     finalizedBy("checksumDist") // checksums are generated after assembleDist runs
 }
 
