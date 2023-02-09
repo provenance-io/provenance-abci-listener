@@ -7,7 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.21"
     id("idea")
     id("org.gradle.crypto.checksum") version "1.4.0"
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
 }
 
 group = "io.provenance"
@@ -26,12 +26,12 @@ repositories {
     mavenLocal()
 }
 
-val grpcVersion = "1.51.0"
+val grpcVersion = "1.52.1"
 val grpcKotlinVersion = "1.3.0"
 val protobufVersion = "3.21.9"
 val coroutinesVersion = "1.6.4"
 val confluentVersion = "7.3.0"
-val junitJupiterVersion = "5.9.1"
+val junitJupiterVersion = "5.9.2"
 val testContainersVersion = "1.17.6"
 val provenanceProtoKotlinVersion = "1.14.0-rc2"
 
@@ -49,9 +49,9 @@ dependencies {
     runtimeOnly("io.grpc:grpc-netty:$grpcVersion")
 
     // Log
-    implementation("org.slf4j:slf4j-api:2.0.5")
+    implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.5")
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
     // Kafka clients
     implementation("io.confluent:kafka-protobuf-serializer:$confluentVersion")
@@ -61,7 +61,7 @@ dependencies {
 
     // Test
     testImplementation(kotlin("test-junit"))
-    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("io.grpc:grpc-testing:$grpcVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")

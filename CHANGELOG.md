@@ -33,6 +33,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## Unreleased
 
+---
+
+## [1.0.0-rc1](https://github.com/provenance-io/provenance-abci-listener/releases/tag/v1.0.0-rc1) - 2023-02-08
+
 ### Improvements
 
 * (deps) [PR 5](https://github.com/provenance-io/provenance-abci-listener/pull/5)  Bump Provenance proto-kotlin to 1.14.0-rc2 (from [1.14.0-rc1](https://github.com/provenance-io/provenance/compare/v1.14.0-rc1...v1.14.0-rc2))
@@ -46,5 +50,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * [PR 8](https://github.com/provenance-io/provenance-abci-listener/pull/8) Fix release workflow to trigger on tagged versions
 * [PR 12](https://github.com/provenance-io/provenance-abci-listener/pull/12) Fix release workflow to properly set distribution version
+
+### Full Commit History
+
+* https://github.com/provenance-io/provenance-abci-listener/compare/main...1.0.0-rc1
 
 ## PRE-HISTORY
