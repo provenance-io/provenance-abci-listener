@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application // Provide convenience executables for trying out the examples.
     jacoco
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.10"
     id("idea")
     id("org.gradle.crypto.checksum") version "1.4.0"
     id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
