@@ -49,7 +49,7 @@ dependencies {
     runtimeOnly("io.grpc:grpc-netty:$grpcVersion")
 
     // Log
-    implementation("org.slf4j:slf4j-api:2.0.5")
+    implementation("org.slf4j:slf4j-api:2.0.6")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
