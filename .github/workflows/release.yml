@@ -26,10 +26,17 @@ jobs:
           java-version: 11
       - name: Set tag version
         run: |
-          echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          VERSION=${GITHUB_REF##*/}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          PRE_RELEASE=false
+          if [[ "$VERSION" =~ -rc ]]; then
+            PRE_RELEASE=true
+          fi
+          echo "PRE_RELEASE=$PRE_RELEASE" >> $GITHUB_ENV
       - name: Defined tag version
         run: |
           echo VERSION=$VERSION
+          echo PRE_RELEASE=$PRE_RELEASE
       - name: Build artifacts
         uses: gradle/gradle-build-action@v2.3.3
         with:
@@ -39,5 +46,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
+          prerelease: ${{ PRE_RELEASE }}
           artifacts: "build/distributions/*"
           bodyFile: "RELEASE_CHANGELOG.md"
