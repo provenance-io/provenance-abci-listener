@@ -35,7 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ---
 
-## [1.0.0-rc2](https://github.com/provenance-io/provenance-abci-listener/releases/tag/v1.0.0-rc2) - 2023-02-09
+## [1.0.0-rc2](https://github.com/provenance-io/provenance-abci-listener/releases/tag/1.0.0-rc2) - 2023-02-09
 
 ### Improvements
 
@@ -47,7 +47,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ---
 
-## [1.0.0-rc1](https://github.com/provenance-io/provenance-abci-listener/releases/tag/v1.0.0-rc1) - 2023-02-08
+## [1.0.0-rc1](https://github.com/provenance-io/provenance-abci-listener/releases/tag/1.0.0-rc1) - 2023-02-08
 
 ### Improvements
 
