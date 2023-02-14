@@ -2,156 +2,104 @@
 
 <!-- TOC 3 -->
   - [Overview](#overview)
-  - [Deploying the Plugin](#deploying-the-plugin)
-    - [Deployment](#deployment)
-    - [Configuration](#configuration)
-    - [Environment variables](#environment-variables)
-    - [Node Configuration](#node-configuration)
+  - [Plugin Deployment](#plugin-deployment)
+  - [Node Configuration](#node-configuration)
 
 
 ## Overview
 
 This document outlines steps to deploy release distributions of the plugin.
 
-## Deploying the Plugin
+## Deploy Plugin
 
-We've created a script, `scrips/deploy.sh`, to help deploy the plugin into your Provenance node environment. The script needs to run from your node.
+Follow the steps below to download, configure and deploy the plugin.
 
-```shell
-PLUGIN_VERSION={{ RELEASE_VERSION }}
-```
-Release versions can be found [here](https://github.com/provenance-io/provenance-abci-listener/tags).
+1. **Specify release**
 
-### Deployment
-```shell
-curl --create-dirs -o $PIO_HOME/plugins/deploy.sh \
-  https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/scripts/deploy.sh \
-  && chmod +x $PIO_HOME/plugins/deploy.sh
-```
+    ```shell
+    TAG={{ RELEASE_TAG }}
+    ```
+    Release versions can be found [here](https://github.com/provenance-io/provenance-abci-listener/tags).
 
-```shell
-sh $PIO_HOME/plugins/deploy.sh $PLUGIN_VERSION
-```
-Will deploy and extract the plugin to `$PIO_HOME/plugins/provenance-abci-listener-{version}`.
 
-### Configuration
+2. **Download**
+    
+    2.1 - Create directories
 
-```shell
-curl --create-dirs -o $PIO_HOME/plugins/provenance-abci-listener-$PLUGIN_VERSION/application.conf \
-  https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/src/main/resources/application.conf
-```
+    ```shell
+    mkdir -p $PIO_HOME/plugins
+   ```
 
-#### Alternatively
-```hocon
-cat << EOF >> $PIO_HOME/plugins/provenance-abci-listener-$PLUGIN_VERSION/application.conf
-# Grpc server config
-grpc.server {
-  addr = localhost
-  port = 1234
-}
+    2.2 - Download plugin
 
-# Kafka producer config
-kafka.producer {
-  # Assign a topic name and optional prefix where events will be written.
-  listen-topics {
-    prefix = "local-"
-    listen-begin-block = ${?kafka.producer.listen-topics.prefix}"listen-begin-block"
-    listen-end-block = ${?kafka.producer.listen-topics.prefix}"listen-end-block"
-    listen-deliver-tx = ${?kafka.producer.listen-topics.prefix}"listen-deliver-tx"
-    listen-commit = ${?kafka.producer.listen-topics.prefix}"listen-commit"
-  }
+   ```shell
+    curl -s https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$TAG/scripts/deploy.sh | bash -s $TAG
+    ```
 
-  # Properties defined by org.apache.kafka.clients.producer.ProducerConfig.
-  # can be defined in this configuration section.
-  kafka-clients {
-    bootstrap.servers = "{{ BROKER_ENDPOINT }}"
-    acks = all
-    enable.idempotence = true
-    max.in.flight.requests.per.connection = 1
-    linger.ms = 50
-    max.request.size = 204857600
-    key.serializer = org.apache.kafka.common.serialization.StringSerializer
-    value.serializer = io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
-    schema.registry.url ="http(s?)://{{ SR_ENDPOINT }}"
-  }
-}
-EOF
-```
+    2.3 - Export plugin
 
-#### Confluent Cloud Configuration
+    ```shell
+    export $PIO_HOME/plugins/provenance-abci-listener-$TAG/bin/provenance-abci-listener
+    ```
 
-```hocon
-cat << EOF >> $PIO_HOME/plugins/provenance-abci-listener-$PLUGIN_VERSION/application.conf
-# Grpc server config
-grpc.server {
-  addr = localhost
-  port = 1234
-}
+3. **Configure**
 
-# Kafka producer config
-kafka.producer {
-  # Assign a topic name and optional prefix where events will be written.
-  listen-topics {
-    prefix = "local-"
-    listen-begin-block = ${?kafka.producer.listen-topics.prefix}"listen-begin-block"
-    listen-end-block = ${?kafka.producer.listen-topics.prefix}"listen-end-block"
-    listen-deliver-tx = ${?kafka.producer.listen-topics.prefix}"listen-deliver-tx"
-    listen-commit = ${?kafka.producer.listen-topics.prefix}"listen-commit"
-  }
+    3.1 - Self-managed Kafka and Confluent Schema Registry
 
-  # Properties defined by org.apache.kafka.clients.producer.ProducerConfig.
-  # can be defined in this configuration section.
-  kafka-clients {
-    bootstrap.servers = "{{ BROKER_ENDPOINT }}"
-    acks = all
-    enable.idempotence = true
-    max.in.flight.requests.per.connection = 1
-    linger.ms = 50
-    max.request.size = 204857600
-    key.serializer = org.apache.kafka.common.serialization.StringSerializer
-    value.serializer = io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
+    ```shell
+    curl -o $PIO_HOME/plugins/application.conf \
+      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/src/main/resources/application.conf
+    ```
 
-    # Required connection configs for Confluent Cloud
-    ssl.endpoint.identification.algorithm=https
-    sasl.mechanism=PLAIN
-    sasl.jaas.config="org.apache.kafka.common.security.plain.PlainLoginModule required username=\"{{ CLOUD_API_KEY }}\" password=\"{{ CLOUD_API_SECRET }}\";"
-    security.protocol=SASL_SSL
+    3.1.1 - Edit configuration and SET the following properties
+    ```shell
+    bootstrap.servers
+    schema.registry.url
+    ```
 
-    # Best practice for higher availability in Apache Kafka clients prior to 3.0
-    session.timeout.ms=45000
+    3.2 - Confluent Cloud
 
-    request.timeout.ms = 20000
-    retry.backoff.ms = 500
+    ```shell
+    curl -o $PIO_HOME/plugins/application.conf \
+      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/src/main/resources/ccloud.conf
+    ```
 
-    # Required connection configs for Confluent Cloud Schema Registry
-    schema.registry.url="https://{{ SR_ENDPOINT }}"
-    basic.auth.credentials.source=USER_INFO
-    basic.auth.user.info="{{ SR_API_KEY }}:{{ SR_API_SECRET }}"
-  }
-}
-EOF
-```
+    3.2.2 - Edit configuration and REPLACE with your ccloud values
+    ```shell
+    {{ BOOTSTRAP_SERVER }}
+    {{ CLOUD_API_KEY }}
+    {{ CLOUD_API_SECRET }}
+    {{ SR_ENDPOINT }}
+    {{ SR_API_KEY }}
+    {{ SR_API_SECRET }}
+    ```
 
-### Environment variables
+    3.3 Export application config
 
-Let the plugin know about the Kafka configuration settings:
-```shell
-export PROVENANCE_ABCI_LISTENER_OPTS="-Dconfig.file=$PIO_HOME/plugins/provenance-abci-listener-$PLUGIN_VERSION/application.conf"
-```
+    ```shell
+    export PROVENANCE_ABCI_LISTENER_OPTS="-Dconfig.file=$PIO_HOME/plugins/application.conf"
+    ```
 
-Let the node know where to find the plugin:
-```shell
-export COSMOS_SDK_ABCI_V1=$PIO_HOME/plugins/provenance-abci-listener-$PLUGIN_VERSION/bin/provenance-abci-listener
-```
+## Configure Node
 
-### Node Configuration
+1. **Enable plugin**
 
-Enable ABCI streaming for your node
-```shell
-provenanced config set streaming.abci.plugin abci_v1
-```
+    ```shell
+    provenanced config set streaming.abci.plugin abci_v1
+    ```
 
-```shell
-provenanced start --x-crisis-skip-assert-invariants --log_level=info
-```
-Logging level `trace|debug|info|warn|error|fatal|panic` (default "info")
+2. **Enable state change listening**
+
+    ```shell
+    provenanced config set streaming.abci.keys '["*"]'
+    ```
+    * `'["*"]'` - captures state changes for **all** module stores
+    * `'["metadata", "attribute", "bank", "gov"[,"..."]]'` - captures state changes for **specific** module stores
+
+
+3. **Start Node**
+
+    ```shell
+    provenanced start --x-crisis-skip-assert-invariants --log_level=info
+    ```
+    * `trace|debug|info|warn|error|fatal|panic` - log level options (default is `info`)

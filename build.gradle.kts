@@ -7,7 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.21"
     id("idea")
     id("org.gradle.crypto.checksum") version "1.4.0"
-    id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.2.0"
 }
 
 group = "io.provenance"
@@ -26,7 +26,7 @@ repositories {
     mavenLocal()
 }
 
-val grpcVersion = "1.52.1"
+val grpcVersion = "1.53.0"
 val grpcKotlinVersion = "1.3.0"
 val protobufVersion = "3.21.9"
 val coroutinesVersion = "1.6.4"
