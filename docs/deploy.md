@@ -39,7 +39,7 @@ Follow the steps below to download, configure and deploy the plugin.
     2.3 - Export plugin
 
     ```shell
-    export $PIO_HOME/plugins/provenance-abci-listener-$TAG/bin/provenance-abci-listener
+    export COSMOS_SDK_ABCI_V1=$PIO_HOME/plugins/provenance-abci-listener-$TAG/bin/provenance-abci-listener
     ```
 
 3. **Configure**
