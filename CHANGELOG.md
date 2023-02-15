@@ -35,7 +35,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-(docs/ci) [PR 32](https://github.com/provenance-io/provenance-abci-listener/pull/31) Update deploy doc and scripts and mark pre-releases
+* (docs/ci) [PR 32](https://github.com/provenance-io/provenance-abci-listener/pull/31) Update deploy doc and scripts and mark pre-releases
+* (docs) [PR 33](https://github.com/provenance-io/provenance-abci-listener/pull/33) Fix typos in deploy steps
 
 ---
 
