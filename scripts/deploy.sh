@@ -32,7 +32,7 @@ echo "Release: $TAG"
 
 # download release distribution
 echo "Downloading release..."
-# curl -s --create-dirs -o "$PLUGIN_DIR.zip" -L "$RELEASE_URL"
+curl -s --create-dirs -o "$PLUGIN_DIR.zip" -L "$RELEASE_URL"
 
 # validate md5 checksum
 echo "Validating release (md5)..."
