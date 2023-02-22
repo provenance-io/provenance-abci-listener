@@ -38,7 +38,7 @@ jobs:
           echo VERSION=$VERSION
           echo PRE_RELEASE=$PRE_RELEASE
       - name: Build artifacts
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@v2.4.0
         with:
           arguments: assembleDist
       - name: Upload artifacts
