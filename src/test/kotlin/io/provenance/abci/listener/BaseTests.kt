@@ -3,8 +3,6 @@ package io.provenance.abci.listener
 import com.google.protobuf.Message
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
-import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.testing.GrpcCleanupRule
 import net.christophschubert.cp.testcontainers.CPTestContainerFactory
 import net.christophschubert.cp.testcontainers.SchemaRegistryContainer
