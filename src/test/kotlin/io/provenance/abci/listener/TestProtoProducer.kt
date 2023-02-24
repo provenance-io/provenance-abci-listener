@@ -1,12 +1,14 @@
 package io.provenance.abci.listener
 
 import com.google.protobuf.Message
+import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
 import java.util.Properties
+import org.apache.kafka.common.serialization.StringSerializer
 
 /**
  * Produce Protobuf messages to Kafka.
@@ -16,8 +18,10 @@ import java.util.Properties
  * @property schemaRegistryUrl Confluent Schema Registry URL
  * @constructor Creates a [TestProtoProducer] object.
  */
-class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) : TestProducer<K, V> {
-    private val config = ConfigFactory.load()
+class TestProtoProducer<K, V : Message>(
+    private val config: Config,
+    private val schemaRegistryUrl: String? = null
+) : TestProducer<K, V> {
 
     /**
      * Specifies the [bootstrapServers] for the producer properties.
@@ -26,8 +30,14 @@ class TestProtoProducer<K, V : Message>(private val schemaRegistryUrl: String) :
     override fun createProducerProperties(bootstrapServers: String?): Properties {
         val props: Properties = config.getConfig("kafka.producer.kafka-clients").toProperties()
         props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers!!
-        props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
+        props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = ProtobufSerializer::class.java
         props[ProducerConfig.INTERCEPTOR_CLASSES_CONFIG] = LoggingProducerInterceptor::class.qualifiedName
+
+        // settings this property will tell the ProtobufSerializer ^^^ which serializer to use.
+        if (!schemaRegistryUrl.isNullOrEmpty())
+            props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
+
         return props
     }
 

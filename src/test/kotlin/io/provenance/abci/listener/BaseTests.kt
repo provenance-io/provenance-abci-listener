@@ -1,0 +1,53 @@
+package io.provenance.abci.listener
+
+import com.google.protobuf.Message
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
+import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
+import io.grpc.inprocess.InProcessChannelBuilder
+import io.grpc.testing.GrpcCleanupRule
+import net.christophschubert.cp.testcontainers.CPTestContainerFactory
+import net.christophschubert.cp.testcontainers.SchemaRegistryContainer
+import org.apache.kafka.clients.producer.Producer
+import org.junit.Rule
+import org.testcontainers.containers.KafkaContainer
+
+open class BaseTests {
+
+    protected val testContainerFactory: CPTestContainerFactory = CPTestContainerFactory()
+    protected val kafka: KafkaContainer = testContainerFactory.createKafka()
+    protected lateinit var schemaRegistry: SchemaRegistryContainer
+
+    protected val config: Config = ConfigFactory.load("test.conf")
+    protected val topicConfig: Config = config.getConfig("kafka.producer.listen-topics")
+
+    protected lateinit var producer: Producer<String, Message>
+
+    @get:Rule
+    val grpcCleanupRule: GrpcCleanupRule = GrpcCleanupRule()
+    protected val listenBeginBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenBeginBlock").directExecutor().build()
+            )
+        )
+    protected val listenEndBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenEndBlock").directExecutor().build()
+            )
+        )
+    protected val listenDeliverTxStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenDeliverTx").directExecutor().build()
+            )
+        )
+    protected val listenCommitStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
+            )
+        )
+
+}
