@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Message
 import com.google.protobuf.Timestamp
 import cosmos.base.store.v1beta1.Listening.StoreKVPair
+import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
 import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockRequest
 import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockResponse
 import cosmos.streaming.abci.v1.Grpc.ListenCommitRequest
@@ -12,6 +13,7 @@ import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxRequest
 import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxResponse
 import cosmos.streaming.abci.v1.Grpc.ListenEndBlockRequest
 import cosmos.streaming.abci.v1.Grpc.ListenEndBlockResponse
+import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -32,6 +34,31 @@ import java.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
+
+    private val listenBeginBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenBeginBlock").directExecutor().build()
+            )
+        )
+    private val listenEndBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenEndBlock").directExecutor().build()
+            )
+        )
+    private val listenDeliverTxStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenDeliverTx").directExecutor().build()
+            )
+        )
+    private val listenCommitStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
+            )
+        )
 
     @BeforeAll
     internal fun setUpAll() {

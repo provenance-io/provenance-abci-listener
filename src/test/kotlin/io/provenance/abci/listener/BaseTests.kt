@@ -25,28 +25,4 @@ open class BaseTests {
 
     @get:Rule
     val grpcCleanupRule: GrpcCleanupRule = GrpcCleanupRule()
-    protected val listenBeginBlockStub =
-        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
-            grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenBeginBlock").directExecutor().build()
-            )
-        )
-    protected val listenEndBlockStub =
-        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
-            grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenEndBlock").directExecutor().build()
-            )
-        )
-    protected val listenDeliverTxStub =
-        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
-            grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenDeliverTx").directExecutor().build()
-            )
-        )
-    protected val listenCommitStub =
-        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
-            grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
-            )
-        )
 }

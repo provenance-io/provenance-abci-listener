@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Message
 import com.google.protobuf.Timestamp
 import cosmos.base.store.v1beta1.Listening.StoreKVPair
+import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
 import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockRequest
 import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockResponse
 import cosmos.streaming.abci.v1.Grpc.ListenCommitRequest
@@ -12,6 +13,7 @@ import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxRequest
 import cosmos.streaming.abci.v1.Grpc.ListenDeliverTxResponse
 import cosmos.streaming.abci.v1.Grpc.ListenEndBlockRequest
 import cosmos.streaming.abci.v1.Grpc.ListenEndBlockResponse
+import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -31,6 +33,31 @@ import java.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
+
+    private val listenBeginBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenBeginBlock_with_schemaRegistry").directExecutor().build()
+            )
+        )
+    private val listenEndBlockStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenEndBlock_with_schemaRegistry").directExecutor().build()
+            )
+        )
+    private val listenDeliverTxStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenDeliverTx_with_schemaRegistry").directExecutor().build()
+            )
+        )
+    private val listenCommitStub =
+        ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
+            grpcCleanupRule.register(
+                InProcessChannelBuilder.forName("listenCommit_with_schemaRegistry").directExecutor().build()
+            )
+        )
 
     @BeforeAll
     internal fun setUpAll() {
@@ -52,7 +79,7 @@ class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
         val time = Instant.now()
 
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenBeginBlock").directExecutor()
+            InProcessServerBuilder.forName("listenBeginBlock_with_schemaRegistry").directExecutor()
                 .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
@@ -114,7 +141,7 @@ class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
     @Test
     fun listenEndBlock(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenEndBlock").directExecutor()
+            InProcessServerBuilder.forName("listenEndBlock_with_schemaRegistry").directExecutor()
                 .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
@@ -144,7 +171,7 @@ class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
     @Test
     fun listenDeliverTx(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenDeliverTx").directExecutor()
+            InProcessServerBuilder.forName("listenDeliverTx_with_schemaRegistry").directExecutor()
                 .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
@@ -176,7 +203,7 @@ class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
     @Test
     fun listenCommit(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenCommit").directExecutor()
+            InProcessServerBuilder.forName("listenCommit_with_schemaRegistry").directExecutor()
                 .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
