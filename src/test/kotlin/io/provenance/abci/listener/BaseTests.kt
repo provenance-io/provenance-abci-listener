@@ -49,5 +49,4 @@ open class BaseTests {
                 InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
             )
         )
-
 }

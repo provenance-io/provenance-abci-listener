@@ -2,13 +2,12 @@ package io.provenance.abci.listener
 
 import com.google.protobuf.Message
 import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
-import java.util.Properties
 import org.apache.kafka.common.serialization.StringSerializer
+import java.util.Properties
 
 /**
  * Produce Protobuf messages to Kafka.
@@ -35,8 +34,9 @@ class TestProtoProducer<K, V : Message>(
         props[ProducerConfig.INTERCEPTOR_CLASSES_CONFIG] = LoggingProducerInterceptor::class.qualifiedName
 
         // settings this property will tell the ProtobufSerializer ^^^ which serializer to use.
-        if (!schemaRegistryUrl.isNullOrEmpty())
+        if (!schemaRegistryUrl.isNullOrEmpty()) {
             props[AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryUrl
+        }
 
         return props
     }

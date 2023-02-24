@@ -3,9 +3,9 @@ package io.provenance.abci.listener
 import com.google.protobuf.Message
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer
-import java.io.ByteArrayOutputStream
 import org.apache.kafka.common.serialization.ByteArraySerializer
 import org.apache.kafka.common.serialization.Serializer
+import java.io.ByteArrayOutputStream
 
 /**
  * ProtobufSerializer is a custom Protobuf serializer for Kafka

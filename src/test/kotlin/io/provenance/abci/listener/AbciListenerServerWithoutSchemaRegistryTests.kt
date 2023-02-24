@@ -15,8 +15,11 @@ import cosmos.streaming.abci.v1.Grpc.ListenEndBlockResponse
 import io.grpc.inprocess.InProcessServerBuilder
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertDoesNotThrow
 import tendermint.abci.Types
 import tendermint.abci.Types.RequestBeginBlock
 import tendermint.abci.Types.RequestDeliverTx
@@ -26,9 +29,6 @@ import tendermint.abci.Types.ResponseCommit
 import tendermint.abci.Types.ResponseDeliverTx
 import tendermint.abci.Types.ResponseEndBlock
 import java.time.Instant
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.assertDoesNotThrow
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
@@ -37,7 +37,7 @@ class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
     internal fun setUpAll() {
         kafka.start()
         producer = TestProtoProducer<String, Message>(config)
-                .createProducer(kafka.bootstrapServers)
+            .createProducer(kafka.bootstrapServers)
     }
 
     @AfterAll
@@ -100,7 +100,7 @@ class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
         val consumer = TestProtoConsumer<String, ByteArray>(
             config = config,
             bootstrapServers = kafka.bootstrapServers,
-            topic = topicConfig.getString(ListenTopic.BEGIN_BLOCK.topic),
+            topic = topicConfig.getString(ListenTopic.BEGIN_BLOCK.topic)
         )
         consumer.consumeAndClose()
         assertThat(consumer.messages.size).isEqualTo(1)
@@ -132,7 +132,7 @@ class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
         val consumer = TestProtoConsumer<String, ByteArray>(
             config = config,
             bootstrapServers = kafka.bootstrapServers,
-            topic = topicConfig.getString(ListenTopic.END_BLOCK.topic),
+            topic = topicConfig.getString(ListenTopic.END_BLOCK.topic)
         )
         consumer.consumeAndClose()
         assertThat(consumer.messages.size).isEqualTo(1)
@@ -165,7 +165,7 @@ class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
         val consumer = TestProtoConsumer<String, ByteArray>(
             config = config,
             bootstrapServers = kafka.bootstrapServers,
-            topic = topicConfig.getString(ListenTopic.DELIVER_TX.topic),
+            topic = topicConfig.getString(ListenTopic.DELIVER_TX.topic)
         )
         consumer.consumeAndClose()
         assertThat(consumer.messages.size).isEqualTo(1)
@@ -214,7 +214,7 @@ class AbciListenerServerWithoutSchemaRegistryTests : BaseTests() {
         val consumer = TestProtoConsumer<String, ByteArray>(
             config = config,
             bootstrapServers = kafka.bootstrapServers,
-            topic = topicConfig.getString(ListenTopic.COMMIT.topic),
+            topic = topicConfig.getString(ListenTopic.COMMIT.topic)
         )
         consumer.consumeAndClose()
         assertThat(consumer.messages.size).isEqualTo(1)
