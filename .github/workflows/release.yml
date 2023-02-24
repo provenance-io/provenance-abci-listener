@@ -40,7 +40,7 @@ jobs:
       - name: Build artifacts
         uses: gradle/gradle-build-action@v2.4.0
         with:
-          arguments: assembleDist
+          arguments: distTar
       - name: Upload artifacts
         uses: ncipollo/release-action@v1
         with:
