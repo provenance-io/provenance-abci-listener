@@ -3,8 +3,6 @@ package io.provenance.abci.listener
 import com.google.protobuf.ByteString
 import com.google.protobuf.Message
 import com.google.protobuf.Timestamp
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
 import cosmos.base.store.v1beta1.Listening.StoreKVPair
 import cosmos.streaming.abci.v1.ABCIListenerServiceGrpcKt
 import cosmos.streaming.abci.v1.Grpc.ListenBeginBlockRequest
@@ -17,18 +15,12 @@ import cosmos.streaming.abci.v1.Grpc.ListenEndBlockRequest
 import cosmos.streaming.abci.v1.Grpc.ListenEndBlockResponse
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
-import io.grpc.testing.GrpcCleanupRule
 import kotlinx.coroutines.runBlocking
-import net.christophschubert.cp.testcontainers.CPTestContainerFactory
-import net.christophschubert.cp.testcontainers.SchemaRegistryContainer
-import org.apache.kafka.clients.producer.Producer
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Rule
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.testcontainers.containers.KafkaContainer
 import tendermint.abci.Types
 import tendermint.abci.Types.RequestBeginBlock
 import tendermint.abci.Types.RequestDeliverTx
@@ -40,46 +32,38 @@ import tendermint.abci.Types.ResponseEndBlock
 import java.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ABCIListenerServerTest {
+class AbciListenerServerWithSchemaRegistryTests : BaseTests() {
 
-    private val testContainerFactory: CPTestContainerFactory = CPTestContainerFactory()
-    private val kafka: KafkaContainer = testContainerFactory.createKafka()
-    private val schemaRegistry: SchemaRegistryContainer = testContainerFactory.createSchemaRegistry(kafka)
-    private val config: Config = ConfigFactory.load()
-    private val topicConfig: Config = config.getConfig("kafka.producer.listen-topics")
-    private lateinit var producer: Producer<String, Message>
-
-    @get:Rule
-    val grpcCleanupRule: GrpcCleanupRule = GrpcCleanupRule()
     private val listenBeginBlockStub =
         ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
             grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenBeginBlock").directExecutor().build()
+                InProcessChannelBuilder.forName("listenBeginBlock_with_schemaRegistry").directExecutor().build()
             )
         )
     private val listenEndBlockStub =
         ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
             grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenEndBlock").directExecutor().build()
+                InProcessChannelBuilder.forName("listenEndBlock_with_schemaRegistry").directExecutor().build()
             )
         )
     private val listenDeliverTxStub =
         ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
             grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenDeliverTx").directExecutor().build()
+                InProcessChannelBuilder.forName("listenDeliverTx_with_schemaRegistry").directExecutor().build()
             )
         )
     private val listenCommitStub =
         ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineStub(
             grpcCleanupRule.register(
-                InProcessChannelBuilder.forName("listenCommit").directExecutor().build()
+                InProcessChannelBuilder.forName("listenCommit_with_schemaRegistry").directExecutor().build()
             )
         )
 
     @BeforeAll
     internal fun setUpAll() {
+        schemaRegistry = testContainerFactory.createSchemaRegistry(kafka)
         schemaRegistry.start()
-        producer = TestProtoProducer<String, Message>(schemaRegistry.baseUrl)
+        producer = TestProtoProducer<String, Message>(config, schemaRegistry.baseUrl)
             .createProducer(kafka.bootstrapServers)
     }
 
@@ -95,8 +79,8 @@ class ABCIListenerServerTest {
         val time = Instant.now()
 
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenBeginBlock").directExecutor()
-                .addService(ABCIListenerService(topicConfig, producer))
+            InProcessServerBuilder.forName("listenBeginBlock_with_schemaRegistry").directExecutor()
+                .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -142,6 +126,7 @@ class ABCIListenerServerTest {
         assertThat(reply.javaClass).isEqualTo(ListenBeginBlockResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenBeginBlockRequest>(
+            config = config,
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
             topic = topicConfig.getString(ListenTopic.BEGIN_BLOCK.topic),
@@ -156,8 +141,8 @@ class ABCIListenerServerTest {
     @Test
     fun listenEndBlock(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenEndBlock").directExecutor()
-                .addService(ABCIListenerService(topicConfig, producer))
+            InProcessServerBuilder.forName("listenEndBlock_with_schemaRegistry").directExecutor()
+                .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -171,6 +156,7 @@ class ABCIListenerServerTest {
         assertThat(reply.javaClass).isEqualTo(ListenEndBlockResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenEndBlockRequest>(
+            config = config,
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
             topic = topicConfig.getString(ListenTopic.END_BLOCK.topic),
@@ -185,8 +171,8 @@ class ABCIListenerServerTest {
     @Test
     fun listenDeliverTx(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenDeliverTx").directExecutor()
-                .addService(ABCIListenerService(topicConfig, producer))
+            InProcessServerBuilder.forName("listenDeliverTx_with_schemaRegistry").directExecutor()
+                .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -201,6 +187,7 @@ class ABCIListenerServerTest {
         assertThat(reply.javaClass).isEqualTo(ListenDeliverTxResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenDeliverTxRequest>(
+            config = config,
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
             topic = topicConfig.getString(ListenTopic.DELIVER_TX.topic),
@@ -216,8 +203,8 @@ class ABCIListenerServerTest {
     @Test
     fun listenCommit(): Unit = runBlocking {
         grpcCleanupRule.register(
-            InProcessServerBuilder.forName("listenCommit").directExecutor()
-                .addService(ABCIListenerService(topicConfig, producer))
+            InProcessServerBuilder.forName("listenCommit_with_schemaRegistry").directExecutor()
+                .addService(AbciListenerService(topicConfig, producer))
                 .build()
                 .start()
         )
@@ -248,6 +235,7 @@ class ABCIListenerServerTest {
         assertThat(reply.javaClass).isEqualTo(ListenCommitResponse::class.java)
 
         val consumer = TestProtoConsumer<String, ListenCommitRequest>(
+            config = config,
             bootstrapServers = kafka.bootstrapServers,
             schemaRegistryUrl = schemaRegistry.baseUrl,
             topic = topicConfig.getString(ListenTopic.COMMIT.topic),

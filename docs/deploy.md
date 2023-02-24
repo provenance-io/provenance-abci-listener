@@ -33,13 +33,13 @@ Follow the steps below to download, configure and deploy the plugin.
     2.2 - Download plugin
 
    ```shell
-    curl -s https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$TAG/scripts/deploy.sh | bash -s $TAG
+    curl -s https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/main/scripts/deploy.sh | bash -s $TAG
     ```
 
     2.3 - Export plugin
 
     ```shell
-    export $PIO_HOME/plugins/provenance-abci-listener-$TAG/bin/provenance-abci-listener
+    export COSMOS_SDK_ABCI_V1=$PIO_HOME/plugins/provenance-abci-listener-$TAG/bin/provenance-abci-listener
     ```
 
 3. **Configure**
@@ -48,7 +48,7 @@ Follow the steps below to download, configure and deploy the plugin.
 
     ```shell
     curl -o $PIO_HOME/plugins/application.conf \
-      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/src/main/resources/application.conf
+      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$TAG/src/main/resources/application.conf
     ```
 
     3.1.1 - Edit configuration and SET the following properties
@@ -61,7 +61,7 @@ Follow the steps below to download, configure and deploy the plugin.
 
     ```shell
     curl -o $PIO_HOME/plugins/application.conf \
-      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$PLUGIN_VERSION/src/main/resources/ccloud.conf
+      https://raw.githubusercontent.com/provenance-io/provenance-abci-listener/$TAG/src/main/resources/ccloud.conf
     ```
 
     3.2.2 - Edit configuration and REPLACE with your ccloud values
