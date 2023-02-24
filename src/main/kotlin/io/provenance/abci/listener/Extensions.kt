@@ -28,7 +28,7 @@ fun Config.toProperties(): Properties {
 /**
  * Add a [dispatch] method to the Kafka [Producer] to produce messages
  * in a non-blocking manner and `await` for acknowledgement from broker
- * before responding on gRPC endpoints in [ABCIListenerService].
+ * before responding on gRPC endpoints in [AbciListenerService].
  *
  * Resumes with a [StatusException] when an exception is encountered.
  */

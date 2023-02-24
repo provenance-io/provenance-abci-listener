@@ -14,7 +14,7 @@ group = "io.provenance"
 version = System.getenv("VERSION") ?: "0-SNAPSHOT"
 
 application {
-    mainClass.set("io.provenance.abci.listener.ABCIListenerServerKt")
+    mainClass.set("io.provenance.abci.listener.AbciListenerServerKt")
 }
 
 repositories {
@@ -84,7 +84,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf(
             "-Xjsr305=strict",
-            "-Xopt-in=kotlin.RequiresOptIn"
+            "-opt-in=kotlin.RequiresOptIn"
         )
         jvmTarget = "11"
         languageVersion = "1.7"
@@ -92,8 +92,10 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.assembleDist {
-    finalizedBy("checksumDist") // checksums are generated after assembleDist runs
+tasks.distTar {
+    compression = Compression.GZIP
+    archiveExtension.set("tar.gz")
+    finalizedBy("checksumDist")
 }
 
 tasks.register<Checksum>("checksumDist") {
@@ -103,7 +105,7 @@ tasks.register<Checksum>("checksumDist") {
     checksumAlgorithm.set(Checksum.Algorithm.MD5)
     appendFileNameToChecksum.set(true)
 
-    dependsOn(tasks.assembleDist)
+    dependsOn(tasks.distTar)
 }
 
 tasks.withType<Test> {
