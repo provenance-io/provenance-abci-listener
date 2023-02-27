@@ -33,7 +33,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## Unreleased
 
-* nothing
+### Improvements
+
+* (scripts) [PR 43](https://github.com/provenance-io/provenance-abci-listener/pull/43)  Remove md5 file after verification in deploy script
 
 ---
 
