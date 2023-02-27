@@ -45,6 +45,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (docs) [PR 33](https://github.com/provenance-io/provenance-abci-listener/pull/33) Fix typos in deploy steps
 * [PR 38](https://github.com/provenance-io/provenance-abci-listener/pull/38) Default to ByteArraySerializer when `schema.registry.url` property is not set
 
+### Bug Fixes
+
+* (ci) [PR 40](https://github.com/provenance-io/provenance-abci-listener/pull/40) Fix `PRE_RELEASE` environment variable in workflow
+
 ### Full Commit History
 
 * https://github.com/provenance-io/provenance-abci-listener/compare/1.0.0-rc2...1.0.0-rc3

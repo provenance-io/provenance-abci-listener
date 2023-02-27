@@ -46,6 +46,6 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          prerelease: ${{ PRE_RELEASE }}
+          prerelease: ${{ env.PRE_RELEASE }}
           artifacts: "build/distributions/*"
           bodyFile: "RELEASE_CHANGELOG.md"
