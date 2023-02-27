@@ -43,3 +43,4 @@ md5sum -c "$PLUGIN_DIR.tar.gz.md5" || exit 1
 echo "Extracting release..."
 tar -zxf "$PLUGIN_DIR.tar.gz" -C "$PLUGINS_HOME"
 rm "$PLUGIN_DIR.tar.gz"
+rm "$PLUGIN_DIR.tar.gz.md5"
