@@ -15,7 +15,7 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 
 /**
- * Producer topic names for the [ABCIListenerService]
+ * Producer topic names for the [AbciListenerService]
  */
 enum class ListenTopic(val topic: String) {
     BEGIN_BLOCK("listen-begin-block"),
@@ -31,7 +31,7 @@ enum class ListenTopic(val topic: String) {
  * @property producer the Kafka Protobuf [Producer].
  * @constructor Creates a gRPC ABCI listener service.
  */
-class ABCIListenerService(
+class AbciListenerService(
     private val topicConfig: Config,
     private val producer: Producer<String, Message>
 ) : ABCIListenerServiceGrpcKt.ABCIListenerServiceCoroutineImplBase() {
