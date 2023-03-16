@@ -7,7 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.21"
     id("idea")
     id("org.gradle.crypto.checksum") version "1.4.0"
-    id("org.jlleitschuh.gradle.ktlint") version "11.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
 group = "io.provenance"
