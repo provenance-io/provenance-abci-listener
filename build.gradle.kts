@@ -7,7 +7,7 @@ plugins {
     kotlin("jvm") version "1.7.21"
     id("idea")
     id("org.gradle.crypto.checksum") version "1.4.0"
-    id("org.jlleitschuh.gradle.ktlint") version "11.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
 group = "io.provenance"
@@ -33,7 +33,7 @@ val coroutinesVersion = "1.6.4"
 val confluentVersion = "7.3.0"
 val junitJupiterVersion = "5.9.2"
 val testContainersVersion = "1.17.6"
-val provenanceProtoKotlinVersion = "1.14.0"
+val provenanceProtoKotlinVersion = "1.14.1"
 
 dependencies {
     // Kotlin
@@ -50,7 +50,7 @@ dependencies {
 
     // Log
     implementation("org.slf4j:slf4j-api:2.0.6")
-    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("ch.qos.logback:logback-classic:1.4.6")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
     // Kafka clients
