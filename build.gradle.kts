@@ -26,7 +26,7 @@ repositories {
     mavenLocal()
 }
 
-val grpcVersion = "1.53.0"
+val grpcVersion = "1.61.0"
 val grpcKotlinVersion = "1.3.0"
 val protobufVersion = "3.21.9"
 val coroutinesVersion = "1.6.4"
