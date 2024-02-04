@@ -57,7 +57,7 @@ dependencies {
     implementation("io.confluent:kafka-protobuf-serializer:$confluentVersion")
 
     // Configuration lib for JVM languages (HOCON)
-    implementation("com.typesafe:config:1.4.2")
+    implementation("com.typesafe:config:1.4.3")
 
     // Test
     testImplementation(kotlin("test-junit"))
