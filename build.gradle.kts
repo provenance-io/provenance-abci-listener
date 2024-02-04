@@ -29,7 +29,7 @@ repositories {
 val grpcVersion = "1.53.0"
 val grpcKotlinVersion = "1.3.0"
 val protobufVersion = "3.21.9"
-val coroutinesVersion = "1.6.4"
+val coroutinesVersion = "1.7.3"
 val confluentVersion = "7.3.0"
 val junitJupiterVersion = "5.9.2"
 val testContainersVersion = "1.19.4"
