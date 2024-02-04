@@ -31,7 +31,7 @@ val grpcKotlinVersion = "1.3.0"
 val protobufVersion = "3.21.9"
 val coroutinesVersion = "1.7.3"
 val confluentVersion = "7.3.0"
-val junitJupiterVersion = "5.9.2"
+val junitJupiterVersion = "5.10.2"
 val testContainersVersion = "1.19.4"
 val provenanceProtoKotlinVersion = "1.17.1"
 
