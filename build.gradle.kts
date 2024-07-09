@@ -61,7 +61,7 @@ dependencies {
 
     // Test
     testImplementation(kotlin("test-junit"))
-    testImplementation("org.assertj:assertj-core:3.25.2")
+    testImplementation("org.assertj:assertj-core:3.26.3")
     testImplementation("io.grpc:grpc-testing:$grpcVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
