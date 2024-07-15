@@ -27,7 +27,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - name: Test
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           arguments: test
       - uses: codecov/codecov-action@v4.0.1
